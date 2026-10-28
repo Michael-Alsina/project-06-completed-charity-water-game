@@ -1,7 +1,12 @@
 // Game configuration and state variables
-const GOAL_CANS = 20;        // Total items needed to collect
 const GAME_DURATION = 30;    // Game duration in seconds
+const DIFFICULTIES = {
+  easy: { canInterval: 2000, penaltyStart: 10, goalCans: 10 },
+  normal: { canInterval: 1500, penaltyStart: 15, goalCans: 15 },
+  hard: { canInterval: 1000, penaltyStart: 20, goalCans: 20 }
+};
 let currentCans = 0;         // Current number of items collected
+let currentGoalCans = DIFFICULTIES.normal.goalCans;
 let gameActive = false;      // Tracks if game is currently running
 let spawnInterval;          // Holds the interval for spawning items
 let penaltySpawnInterval;    // Holds the interval for spawning penalty items
@@ -72,23 +77,27 @@ function spawnPenaltyCan() {
 // Initializes and starts a new game
 function startGame() {
   if (gameActive) return; // Prevent starting a new game if one is already active
+  const selectedDifficulty = document.querySelector('input[name="difficulty"]:checked').value;
+  const difficulty = DIFFICULTIES[selectedDifficulty];
   gameActive = true;
   currentCans = 0;
+  currentGoalCans = difficulty.goalCans;
   timeLeft = GAME_DURATION;
   penaltyCanSpawned = false;
   document.getElementById('current-cans').textContent = currentCans;
+  document.getElementById('goal-cans').textContent = currentGoalCans;
   document.getElementById('timer').textContent = timeLeft;
   document.getElementById('achievements').textContent = '';
   createGrid(); // Set up the game grid
   spawnWaterCan();
-  spawnInterval = setInterval(spawnWaterCan, 1000); // Spawn water cans every second
+  spawnInterval = setInterval(spawnWaterCan, difficulty.canInterval);
   timerInterval = setInterval(() => {
     timeLeft -= 1;
     document.getElementById('timer').textContent = timeLeft;
 
-    if (timeLeft === 15 && !penaltyCanSpawned) {
+    if (timeLeft === difficulty.penaltyStart && !penaltyCanSpawned) {
       spawnPenaltyCan();
-      penaltySpawnInterval = setInterval(spawnPenaltyCan, 1000);
+      penaltySpawnInterval = setInterval(spawnPenaltyCan, difficulty.canInterval);
     }
 
     if (timeLeft <= 0) {
@@ -103,7 +112,7 @@ function endGame() {
   clearInterval(penaltySpawnInterval); // Stop spawning penalty cans
   clearInterval(timerInterval); // Stop the countdown
   document.getElementById('achievements').textContent =
-    currentCans >= GOAL_CANS ? 'You win!' : 'You lose!';
+    currentCans >= currentGoalCans ? 'You win!' : 'You lose!';
 }
 
 // Adds a point when the active water can is clicked
@@ -116,9 +125,19 @@ document.querySelector('.game-grid').addEventListener('click', (event) => {
   document.getElementById('current-cans').textContent = currentCans;
   event.target.closest('.grid-cell').innerHTML = '';
 
-  if (currentCans >= GOAL_CANS) {
+  if (currentCans >= currentGoalCans) {
     endGame();
   }
+});
+
+// Update the displayed goal when the selected difficulty changes
+document.querySelectorAll('input[name="difficulty"]').forEach((input) => {
+  input.addEventListener('change', () => {
+    if (!gameActive) {
+      currentGoalCans = DIFFICULTIES[input.value].goalCans;
+      document.getElementById('goal-cans').textContent = currentGoalCans;
+    }
+  });
 });
 
 // Set up click handler for the start button

@@ -23,7 +23,7 @@ Fonts:
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: Avenir Heavy;
   margin: 0;
   padding: 30px;
   background-color: #003366;
@@ -37,6 +37,31 @@ body {
   padding: 40px;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.container::before,
+.container::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 510px;
+  height: 580px;
+  background-image: url('img/water-can-transparent.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  pointer-events: none;
+}
+
+.container::before {
+  left: -435px;
+  transform: translateY(-50%) rotate(-12deg);
+}
+
+.container::after {
+  right: -435px;
+  transform: translateY(-50%) rotate(12deg);
 }
 
 .game-header {
@@ -71,9 +96,11 @@ h1 img {
 .stats {
   display: flex;
   justify-content: space-around;
+  align-items: center;
+  gap: 18px;
   margin-bottom: 30px;
   background-color: #FFC907;
-  padding: 15px 0;
+  padding: 15px;
   border-radius: 8px;
 }
 
@@ -82,6 +109,42 @@ h1 img {
   font-size: 18px;
   font-weight: bold;
   color: #333;
+  white-space: nowrap;
+}
+
+.difficulty-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px;
+  border: 2px solid rgba(0, 51, 102, 0.25);
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.45);
+  color: #003366;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.difficulty-label {
+  padding: 0 4px;
+}
+
+.difficulty-control label {
+  padding: 7px 9px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.difficulty-control label:has(input:checked) {
+  background-color: #003366;
+  color: #fff;
+}
+
+.difficulty-control input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .game-grid {
@@ -182,4 +245,32 @@ button {
   display: block;
   margin: 30px auto 0;
   transition: background-color 0.2s;
+}
+
+.site-footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.site-footer a {
+  color: #003366;
+  font-weight: bold;
+}
+
+@media (max-width: 650px) {
+  .container::before,
+  .container::after {
+    display: none;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .difficulty-control {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
